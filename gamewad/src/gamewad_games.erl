@@ -27,25 +27,32 @@ random_games(N) ->
 
 random_games(N, Keys) ->
     S = mnesia:table_info(gamejson, size),
-    Offsets = lists:sort([crypto:rand_uniform(0, S) || I <- lists:seq(1,N)]),
+    {ok, Offsets} = random_list(0, S, N),
     [begin
          [#keyvalues{v=Slug}] = mnesia:dirty_read({keyvalues, O}),
          [#gamejson{json=GD}] = mnesia:dirty_read({gamejson, Slug}),
          filterkeys(GD, Keys)
      end || O <- Offsets].
 
+random_list(Min, Max, N) when N > (Max-Min) ->
+    {error, invalid_range};
+random_list(Min, Max, N) ->
+    F = fun() -> crypto:rand_uniform(Min, Max) end,
+    {ok, random_list1(F, N, sets:new())}.
+
+random_list1(F, N, Acc) ->
+    case sets:size(Acc) of
+        N ->
+            sets:to_list(Acc);
+        _ ->
+            AccOut = sets:add_element(F(), Acc),
+            random_list1(F, N, AccOut)
+    end.
+
 filterkeys({struct, Data}, Keys) ->
     {struct, [{K, proplists:get_value(K, Data, <<"">>)} || K <- Keys]}.
 
-%% random_games1([], Acc) ->
-%%     Acc;
-%% random_games1(K, [N | Offsets], N, Acc) ->
-%%     [#gamejson{json=GD}] = mnesia:dirty_read({gamejson, K}),
-%%     random_games1(mnesia:dirty_next(gamejson, K), Offsets, N+1, [GD | Acc]);
-%% random_games1(K, Offsets, N, Acc) ->
-%%     random_games1(mnesia:dirty_next(gamejson, K), Offsets, N+1, Acc).
 
-    
 load_games_from_file(File) ->
     {ok, D} = file:read_file(File),
     {struct, Data} = mochijson2:decode(D),
