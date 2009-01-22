@@ -51,7 +51,8 @@ function show_favorites(arr) {
 	     SPAN({"class": "deletoid"},
 		  A({"href": "javascript:delete_favorite('"
 			+ obj.slug +"')"},
-		    IMG({"src": "/static/img/delete.gif"}))),
+		    IMG({"src": "/static/img/delete.gif",
+			  "title": "remove this favorite"}))),
 	     A({"href": "/game.html?slug=" + obj.slug},
 	       IMG({"src": obj.thumbnail_url, "title": obj.name}))
 	     );
