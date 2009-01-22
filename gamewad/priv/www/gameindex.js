@@ -41,6 +41,7 @@ function show_random_games(arr) {
 
 function show_favorites(arr) {
   if (!arr) { return; }
+  if (arr.length < 1) { return ;}
   var i = 0;
   var games = [];
   var s;
