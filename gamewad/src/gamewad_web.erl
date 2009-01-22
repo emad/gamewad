@@ -57,7 +57,6 @@ loop(Req, DocRoot) ->
                     Games = 
                              [gamewad_games:game_json(G)
                               || G <- GameList],
-                    io:format("emad: ~p~n", [Guid]),
                     Req:ok({<<"application/json">>,
                             [],
                             mochijson2:encode(Games)});
