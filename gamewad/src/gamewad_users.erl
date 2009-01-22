@@ -26,12 +26,9 @@ get_favorites(Guid) ->
                      mnesia:dirty_read({favorite, Guid})].
 
 is_favorite(Guid, GameSlug) ->
-    io:format("~p~n", [#favorite{guid=Guid, gameslug=GameSlug}]),
     case mnesia:dirty_match_object(#favorite{guid=Guid, gameslug=GameSlug}) of
         [] ->
-            io:format("false~n"),
             false;
         _ ->
-            io:format("true~n"),
             true
     end.
