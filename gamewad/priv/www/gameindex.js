@@ -54,7 +54,7 @@ function show_favorites(arr) {
 		    IMG({"src": "/static/img/delete.gif",
 			  "title": "remove this favorite"}))),
 	     A({"href": "/game.html?slug=" + obj.slug},
-	       IMG({"src": obj.thumbnail_url, "title": obj.name}))
+	       IMG({"class": "thumbnail", "src": obj.thumbnail_url, "title": obj.name}))
 	     );
 
     //   s.push(A({"href": "/game.html?slug=" + obj.slug},
