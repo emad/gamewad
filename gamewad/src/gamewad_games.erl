@@ -12,7 +12,13 @@ create_tables() ->
                               {disc_copies, [node()]}]),
     {atomic, ok} = mnesia:create_table(keyvalues,
                              [{attributes, record_info(fields, keyvalues)},
-                              {disc_copies, [node()]}]).
+                              {disc_copies, [node()]}]),
+    ok.
+
+game_json(Slugs, Keys) when is_list(Slugs) ->
+    [game_json(S, Keys) || S <- Slugs];
+game_json(Slug, Keys) ->
+    filterkeys(game_json(Slug), Keys).
 
 game_json(Slug) ->
     case mnesia:dirty_read(gamejson, Slug) of
@@ -49,6 +55,8 @@ random_list1(F, N, Acc) ->
             random_list1(F, N, AccOut)
     end.
 
+filterkeys(null, Keys) ->
+    null;
 filterkeys({struct, Data}, Keys) ->
     {struct, [{K, proplists:get_value(K, Data, <<"">>)} || K <- Keys]}.
 
