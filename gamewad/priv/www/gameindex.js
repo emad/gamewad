@@ -33,7 +33,7 @@ function show_random_games(arr) {
   for (i=0; i < arr.length; i++) {
     obj = arr[i];
     games.push(A({"href": "/game.html?slug=" + obj.slug},
-		 IMG({"class": "thumbnail", "src": obj.thumbnail_url})));
+		 IMG({"class": "thumbnail", "src": obj.thumbnail_url, "title": obj.name})));
     if ((i+1) % 3 == 0) { games.push(BR()); games.push(BR()); };
   }
   replaceChildNodes("random_games", games);
@@ -53,7 +53,7 @@ function show_favorites(arr) {
 			+ obj.slug +"')"},
 		    IMG({"src": "/static/img/delete.gif"}))),
 	     A({"href": "/game.html?slug=" + obj.slug},
-	       IMG({"src": obj.thumbnail_url}))
+	       IMG({"src": obj.thumbnail_url, "title": obj.name}))
 	     );
 
     //   s.push(A({"href": "/game.html?slug=" + obj.slug},

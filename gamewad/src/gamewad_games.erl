@@ -29,7 +29,7 @@ game_json(Slug) ->
     end.
 
 random_games(N) ->
-    random_games(N, [<<"thumbnail_url">>, <<"slug">>]).
+    random_games(N, [<<"thumbnail_url">>, <<"slug">>, <<"name">>]).
 
 random_games(N, Keys) ->
     S = mnesia:table_info(gamejson, size),

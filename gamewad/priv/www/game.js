@@ -63,7 +63,8 @@ function show_random_games(arr) {
   if (!arr) { return; }
   var games = map(function (obj) {
        return A({"href": "/game.html?slug=" + obj.slug},
- 	    IMG({"src": obj.thumbnail_url}))}, arr);
+		IMG({"class": "thumbnail",
+		      "src": obj.thumbnail_url, "title": obj.name}))}, arr);
   replaceChildNodes("random_games", games);
  
 }
