@@ -53,6 +53,7 @@ loop(Req, DocRoot) ->
                     C = list_to_integer(Count),
                     Data = gamewad_games:random_games(C),
                     Req:ok({<<"application/json">>,
+                            [{"Cache-Control", "no-cache"}, {"Expires", "Mon, 01 Jan 1009 01:00:00 GMT"}],
                             mochijson2:encode(Data)});
                 "user/favorites/get" ++ _ ->
                     {ok, Guid} = get_guid(Req),
@@ -61,7 +62,7 @@ loop(Req, DocRoot) ->
                              [gamewad_games:game_json(G)
                               || G <- GameList],
                     Req:ok({<<"application/json">>,
-                            [],
+                            [{"Cache-Control", "no-cache"}, {"Expires", "Mon, 01 Jan 1009 01:00:00 GMT"}],
                             mochijson2:encode(Games)});
                 _ ->
                     {ok, Guid} = get_guid(Req),
