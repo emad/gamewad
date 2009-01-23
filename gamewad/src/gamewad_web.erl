@@ -7,7 +7,10 @@
 -author('author <author@example.com>').
 
 -export([start/1, stop/0, loop/2]).
+-define(EPOCHDELTA, 62167219200).
+-define(HMACKEY, "usearandomstringhere").
 
+-compile([export_all]).
 %% External API
 
 start(Options) ->
@@ -62,7 +65,8 @@ loop(Req, DocRoot) ->
                             mochijson2:encode(Games)});
                 _ ->
                     {ok, Guid} = get_guid(Req),
-                     H = [mochiweb_cookies:cookie("gamewad_guid", Guid,
+                     H = [mochiweb_cookies:cookie("gamewad_user",
+                                                  guid_cookie(Guid),
                                                   [{path, "/"},
                                                    {max_age, 315360000}])],
                     Req:serve_file(Path, DocRoot, H)
@@ -95,17 +99,44 @@ get_option(Option, Options) ->
 
 
 get_guid(Req) ->
-    get_guid(Req, "gamewad_guid").
+    get_guid(Req, "gamewad_user").
 
 get_guid(Req, CookieName) ->
     case Req:get_cookie_value(CookieName) of
         undefined ->
             Guid = generate_guid(),
             {ok, Guid};
-        Guid ->
-            {ok, Guid}
+        GuidCookie ->
+            case valid_guid_cookie(GuidCookie) of
+                {ok, Guid} ->
+                    {ok, Guid};
+                invalid ->
+                    {ok, generate_guid()}
+            end
     end.
 
+
+
+timestamp() ->
+    calendar:datetime_to_gregorian_seconds(calendar:universal_time())
+        - ?EPOCHDELTA.
+
+guid_cookie(Guid) ->
+    TS = integer_to_list(timestamp()),
+    N = mochicode:url64_encode(crypto:rand_bytes(6)),
+    Data = Guid ++ TS ++ N,
+    HMAC = mochicode:url64_encode(crypto:sha_mac(?HMACKEY, Data)),
+    [Guid, $&, TS, $&, N, $&, HMAC].
+
+valid_guid_cookie(GuidCookie) ->
+    [Guid, TS, N, HMAC] = string:tokens(GuidCookie, "&"),
+    Data = Guid ++ TS ++ N,
+    case mochicode:url64_encode(crypto:sha_mac(?HMACKEY, Data)) of
+        HMAC ->
+            {ok, Guid};
+        _ ->
+            invalid
+    end.
 
 generate_guid() ->
     generate_id(<<"0123456789abcdef">>, <<"fedcba9876543210">>).

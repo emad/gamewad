@@ -96,6 +96,7 @@ function do_favorite(action, slug) {
     }
 
 function game_loaded() {
+  show_add_favorite();
   start_get_random_games().addCallback(show_random_games);
   var SLUG = get_slug();
   if (SLUG) {
